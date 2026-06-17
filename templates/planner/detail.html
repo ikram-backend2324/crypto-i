@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load md %}
+{% block title %}Plan #{{ plan.id }} — Forge{% endblock %}
+{% block content %}
+<div class="doc">
+  <div class="doc-top">
+    <a class="back" href="{% url 'home' %}">← New plan</a>
+    <button class="printbtn" onclick="window.print()">Save as PDF / print</button>
+  </div>
+
+  <div class="idea-band">
+    <div class="k">The idea</div>
+    <div class="v">{{ plan.idea_text }}</div>
+  </div>
+
+  <article class="plan">
+    {{ plan.plan_markdown|render_markdown }}
+  </article>
+</div>
+{% endblock %}

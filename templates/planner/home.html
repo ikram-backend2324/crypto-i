@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="stage">
+  <header class="topbar">
+    <div class="brand"><div class="mark"><span>F</span></div> FORGE</div>
+    <a href="/admin/">Admin console →</a>
+  </header>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">AI Business Plan Studio</div>
+      <h1>
+        <span class="ln">From a sentence</span>
+        <span class="ln">to a <em>full plan</em>,</span>
+        <span class="ln">in one pass.</span>
+      </h1>
+      <p class="lede">Describe your idea in any language. Forge drafts a ten-part
+        business plan — audience, market, revenue, a 30-day MVP, costs, risks and
+        growth — and answers in the language you wrote in.</p>
+
+      <form method="post" class="composer" id="genForm">
+        {% csrf_token %}
+        {% if messages %}{% for m in messages %}
+          <div class="flash {{ m.tags }}">{{ m }}</div>
+        {% endfor %}{% endif %}
+        <label for="idea_text">Your business idea</label>
+        <textarea name="idea_text" id="idea_text" required
+          placeholder="e.g. A subscription box of regional Uzbek spices for home cooks abroad…"></textarea>
+        <p class="langhint">Write in <b>English</b>, <b>Oʻzbekcha</b>, or <b>Русский</b> — the plan comes back in that language.</p>
+        <button type="submit" class="btn" id="genBtn">Forge my plan →</button>
+      </form>
+    </div>
+
+    <div class="canvas-wrap">
+      <div class="canvas-fallback" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <canvas id="forge3d"></canvas>
+      <div class="canvas-cap">10 panels · 10 sections · one structure</div>
+    </div>
+  </section>
+
+  {% if recent %}
+  <section class="recent">
+    <h2>Recently forged</h2>
+    <div class="recent-grid">
+      {% for p in recent %}
+      <a class="rcard" href="{% url 'plan_detail' p.pk %}">
+        <div class="rid">PLAN #{{ p.id }}</div>
+        <p>{{ p.idea_text|truncatechars:90 }}</p>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/three.min.js' %}"></script>
+<script src="{% static 'js/forge3d.js' %}"></script>
+<script>
+  document.getElementById("genForm").addEventListener("submit", function () {
+    var b = document.getElementById("genBtn");
+    b.disabled = true;
+    b.textContent = "Forging… this takes ~30s";
+    if (window.forgeAssemble) window.forgeAssemble();
+  });
+</script>
+{% endblock %}
